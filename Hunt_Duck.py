@@ -99,6 +99,8 @@ while main:
             if respawn != 0:
                 if elapsed > delay:
                     if elapsed % 1 == 0:
+                        for tomato in tomato_sprites_list:
+                            tomato.speed /= 2
                         delay += 5
                         respawn -= 1
 
