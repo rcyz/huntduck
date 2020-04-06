@@ -51,12 +51,13 @@ while main:
 
     # initialise variables used for the timer and life system
     times = 0
-    startpause = 0
-    endpause = 0
-    pausetime = 0
-    totalpausetime = 0
+    pause = {
+        'start': 0,
+        'end': 0,
+        'paused': 0,
+        'totalpaused': 0
+    }
     lives = 5
-    speed = 100
     respawn = 10
     delay = 0
 
@@ -94,15 +95,14 @@ while main:
         while playing:
 
             # works out time played and renders the label
-            elapsed = int(time.process_time() - start - totalpausetime)
+            elapsed = int(time.process_time() - start - pause['totalpaused'])
             if respawn != 0:
                 if elapsed > delay:
                     if elapsed % 1 == 0:
-                        speed /= 2
                         delay += 5
                         respawn -= 1
 
-            elapsedInt = int(float(time.process_time() - start - totalpausetime) * 1000)
+            elapsedInt = int(float(time.process_time() - start - pause['totalpaused']) * 1000)
             draw_timer(screen, gamefont, elapsed)
 
             # creating bullet sprites and adding them to sprite list
@@ -159,7 +159,7 @@ while main:
                     if not mousestatus[0]:
                         playing = False
                         paused = True
-                        startpause = time.process_time()
+                        pause['start'] = time.process_time()
                         times = elapsed
 
             pygame.display.update()
@@ -186,9 +186,9 @@ while main:
                         if mousestatus[0]:
                             playing = True
                             paused = False
-                            endpause = time.process_time()
-                            pausetime = endpause - startpause
-                            totalpausetime += pausetime
+                            pause['end'] = time.process_time()
+                            pause['paused'] = pause['end'] - pause['start']
+                            pause['totalpaused'] += pause['paused']
                     # check if the player wants to return to the main menu
                     if event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
                         paused = False
