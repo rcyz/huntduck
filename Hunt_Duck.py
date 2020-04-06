@@ -1,0 +1,234 @@
+import pygame
+import sys
+import time
+from pygame.locals import *
+from utils.classes import *
+from utils.hiscoreFuncs import *
+from utils.drawfuncs import *
+
+pygame.init()
+
+# initialising screen
+screen = pygame.display.set_mode((891, 608))
+pygame.display.set_caption('Hunt Duck')
+clock = pygame.time.Clock()
+
+backgroundImg = pygame.image.load('images/background.png')
+pausescreen = pygame.image.load('images/pausescreen.png')
+titlescreen = pygame.image.load('images/titlescreen.png')
+gameoverscreen = pygame.image.load('images/losing.png')
+gamefont = pygame.font.Font(None, 42)
+endfont = pygame.font.Font(None, 100)
+
+# main loop condition
+main = True
+
+# Sprite lists
+all_sprites_list = pygame.sprite.Group()
+
+dog = Dog()
+all_sprites_list.add(dog)
+
+duck = Duck()
+all_sprites_list.add(duck)
+
+#       --- MAIN LOOP ---
+
+while main:
+
+    # creates the tomato list and direction lists
+    # also wipes them everytime the game restarts
+    tomato_sprites_list = pygame.sprite.Group()
+    tomato_xdir = []
+    tomato_ydir = []
+
+    # loop conditions
+    main = True
+    menu = True
+    draw = False
+    game = True
+    playing = True
+    paused = False
+    game_over = False
+
+    # initialise variables used for the timer and life system
+    times = 0
+    startpause = 0
+    endpause = 0
+    pausetime = 0
+    totalpausetime = 0
+    lives = 5
+    speed = 100
+    respawn = 10
+    delay = 0
+
+    # game loop
+    while game:
+        while menu:
+            screen.blit(titlescreen, (0, 0))
+            # calculate high score and draw to screen
+            best_time = calc_hiscores()
+            draw_hiscores(screen, gamefont, best_time)
+
+            # grab the mouse location
+            mousex, mousey = pygame.mouse.get_pos()
+
+            pygame.display.update()
+
+            # events
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                elif event.type == MOUSEBUTTONDOWN:
+                    # grab the status of the mouse buttons and check if the left
+                    # mouse button is pressed
+                    mousestatus = pygame.mouse.get_pressed()
+                    if mousestatus[0]:
+                        # check whether the mouse is over the start button
+                        if mousex > 320 and mousex < 550 and mousey > 400 and mousey < 460:
+                            menu = False
+                            playing = True
+                            start = time.process_time()
+
+        # playing loop
+        while playing:
+
+            # works out time played and renders the label
+            elapsed = int(time.process_time() - start - totalpausetime)
+            if respawn != 0:
+                if elapsed > delay:
+                    if elapsed % 1 == 0:
+                        speed /= 2
+                        delay += 5
+                        respawn -= 1
+
+            elapsedInt = int(float(time.process_time() - start - totalpausetime) * 1000)
+            draw_timer(screen, gamefont, elapsed)
+
+            # creating bullet sprites and adding them to sprite list
+            if elapsedInt % respawn == 0:
+                if len(tomato_sprites_list) < 20:
+                    # creates tomato sprite
+                    tomato = Tomato()
+                    # draws the new object to the start position
+                    tomato.start_pos()
+                    # grab mouse coordinates
+                    mousex, mousey = pygame.mouse.get_pos()
+                    # calculate x/y direction of tomato and store in
+                    # respective lists
+                    xdir = (mousex-tomato.rect.x)/speed
+                    ydir = (tomato.rect.y-mousey)/speed
+                    tomato_xdir.append(xdir)
+                    tomato_ydir.append(ydir)
+                    tomato_sprites_list.add(tomato)
+
+            # updates the position of all the sprites
+            all_sprites_list.update()
+            i = 0
+            # for loop updating each tomato in turn
+            # and checking if events have happened
+            for tomato in tomato_sprites_list:
+                # loads the relevant x/y directions from their lists
+                xdir = tomato_xdir[i]
+                ydir = tomato_ydir[i]
+                # checks for collision between duck and tomato
+                if tomato.rect.colliderect(duck.rect):
+                    lives -= 1
+                    tomato_sprites_list.remove(tomato)
+                    tomato_xdir.pop(i)
+                    tomato_ydir.pop(i)
+                    i -= 1
+                elif tomato.rect.x > 891 or tomato.rect.x < 0 or tomato.rect.y > 608 or tomato.rect.y < 40:
+                    tomato_sprites_list.remove(tomato)
+                    tomato_xdir.pop(i)
+                    tomato_ydir.pop(i)
+                    i -= 1
+
+                i += 1
+                # updates the position of the tomato
+                tomato.update(xdir, ydir)
+
+            # drawing the background, timer and sprites to the screen
+            screen.blit(backgroundImg, (0, 0))
+            draw_timer(screen, gamefont, elapsed)
+            all_sprites_list.draw(screen)
+            tomato_sprites_list.draw(screen)
+            draw_lives(screen, gamefont, lives)
+
+            # checks if the duck has ran out of lives
+            if lives <= 0:
+                # records the time when the player died
+                finaltime = str(elapsed)
+                playing = False
+                game_over = True
+
+            # events
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+                # checks if the left mouse button has been released and if so
+                # enters the pause loop
+                elif event.type == MOUSEBUTTONUP:
+                    mousestatus = pygame.mouse.get_pressed()
+                    if not mousestatus[0]:
+                        playing = False
+                        paused = True
+                        startpause = time.process_time()
+                        times = elapsed
+
+            pygame.display.update()
+
+            # pause loop
+            while paused:
+
+                # draws the pause screen, lives and timer to the screen
+                screen.blit(pausescreen, (0, 0))
+                draw_timer(screen, gamefont, times)
+                draw_lives(screen, gamefont, lives)
+
+                pygame.display.update()
+
+                # events
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    # if the left mouse button has been pressed, calculate the time while paused
+                    # and return to the game loop
+                    if event.type == MOUSEBUTTONDOWN:
+                        mousestatus = pygame.mouse.get_pressed()
+                        if mousestatus[0]:
+                            playing = True
+                            paused = False
+                            endpause = time.process_time()
+                            pausetime = endpause - startpause
+                            totalpausetime += pausetime
+                    # check if the player wants to return to the main menu
+                    if event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
+                        paused = False
+                        game = False
+                        menu = True
+
+            # game over loop
+            while game_over:
+                # draw the game over screen and final time to the screen
+                screen.blit(gameoverscreen, (0, 0))
+                draw_finaltime(screen, endfont, finaltime)
+                pygame.display.update()
+                # events
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        pygame.quit()
+                        sys.exit()
+
+                    elif event.type == MOUSEBUTTONDOWN:
+                        # save the score to the hiscore text file
+                        save_hiscores(finaltime)
+                        # return to the menu loop
+                        game_over = False
+                        game = False
+                        menu = True
+            clock.tick(30)
