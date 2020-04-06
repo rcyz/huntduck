@@ -45,21 +45,27 @@ class Dog(pygame.sprite.Sprite):
 class Tomato(pygame.sprite.Sprite):
     """ This class represents the bullet . """
 
-    def __init__(self):
+    def __init__(self, mx, my):
         # Call the parent class (Sprite) constructor
         super(Tomato, self).__init__()
+        self.speed = 50
 
         self.image = pygame.image.load('images/tomato.png')
 
         self.rect = self.image.get_rect()
-
-    def start_pos(self):
-        randx = random.randint(1, 891)
-        self.rect.x = randx
+        self.rect.x = random.randint(1, 891)
         self.rect.y = 608
 
-    def update(self, mx, my):
+        self.xdir = (mx - self.rect.x)/50
+        self.ydir = (self.rect.y - my)/50
+    #
+    # def start_pos(self):
+    #     randx = random.randint(1, 891)
+    #     self.rect.x = randx
+    #     self.rect.y = 608
+
+    def update(self):
         """ Move the bullet. """
 
-        self.rect.x += mx
-        self.rect.y -= my
+        self.rect.x += self.xdir
+        self.rect.y -= self.ydir

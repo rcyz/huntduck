@@ -39,8 +39,6 @@ while main:
     # creates the tomato list and direction lists
     # also wipes them everytime the game restarts
     tomato_sprites_list = pygame.sprite.Group()
-    tomato_xdir = []
-    tomato_ydir = []
 
     # loop conditions
     main = True
@@ -111,17 +109,9 @@ while main:
             if elapsedInt % respawn == 0:
                 if len(tomato_sprites_list) < 20:
                     # creates tomato sprite
-                    tomato = Tomato()
-                    # draws the new object to the start position
-                    tomato.start_pos()
-                    # grab mouse coordinates
                     mousex, mousey = pygame.mouse.get_pos()
-                    # calculate x/y direction of tomato and store in
-                    # respective lists
-                    xdir = (mousex-tomato.rect.x)/speed
-                    ydir = (tomato.rect.y-mousey)/speed
-                    tomato_xdir.append(xdir)
-                    tomato_ydir.append(ydir)
+                    tomato = Tomato(mousex, mousey)
+
                     tomato_sprites_list.add(tomato)
 
             # updates the position of all the sprites
@@ -130,25 +120,18 @@ while main:
             # for loop updating each tomato in turn
             # and checking if events have happened
             for tomato in tomato_sprites_list:
-                # loads the relevant x/y directions from their lists
-                xdir = tomato_xdir[i]
-                ydir = tomato_ydir[i]
                 # checks for collision between duck and tomato
                 if tomato.rect.colliderect(duck.rect):
                     lives -= 1
                     tomato_sprites_list.remove(tomato)
-                    tomato_xdir.pop(i)
-                    tomato_ydir.pop(i)
                     i -= 1
                 elif tomato.rect.x > 891 or tomato.rect.x < 0 or tomato.rect.y > 608 or tomato.rect.y < 40:
                     tomato_sprites_list.remove(tomato)
-                    tomato_xdir.pop(i)
-                    tomato_ydir.pop(i)
                     i -= 1
 
                 i += 1
                 # updates the position of the tomato
-                tomato.update(xdir, ydir)
+                tomato.update()
 
             # drawing the background, timer and sprites to the screen
             screen.blit(backgroundImg, (0, 0))
