@@ -22,6 +22,16 @@ endfont = pygame.font.Font(None, 100)
 
 # main loop condition
 main = True
+diffIndex = 0
+diffSpeeds = {
+    'Easy': 100,
+    'Medium': 50,
+    'Hard': 20,
+    'Insane': 10,
+    'Fearless': 5
+}
+respawn = 10
+
 
 # Sprite lists
 all_sprites_list = pygame.sprite.Group()
@@ -31,10 +41,6 @@ all_sprites_list.add(dog)
 
 duck = Duck()
 all_sprites_list.add(duck)
-
-diffIndex = 0
-
-#       --- MAIN LOOP ---
 
 while main:
 
@@ -59,17 +65,10 @@ while main:
         'paused': 0,
         'totalpaused': 0
     }
-    diffSpeeds = {
-        'Easy': 100,
-        'Medium': 50,
-        'Hard': 20,
-        'Insane': 10,
-        'Fearless': 5
-    }
     lives = 5
-    respawn = 10
     delay = 0
     currDiff = str(list(diffSpeeds.keys())[diffIndex])
+    speed = diffSpeeds[currDiff]
 
     # game loop
     while game:
@@ -108,7 +107,11 @@ while main:
                     elif event.key == K_LEFT:
                         if diffIndex > 0:
                             diffIndex -= 1
+                    elif event.key == K_ESCAPE:
+                        pygame.quit()
+                        sys.exit()
                     currDiff = str(list(diffSpeeds.keys())[diffIndex])
+                    speed = diffSpeeds[currDiff]
 
         # playing loop
         while playing:
@@ -118,8 +121,7 @@ while main:
             if respawn != 0:
                 if elapsed > delay:
                     if elapsed % 1 == 0:
-                        for tomato in tomato_sprites_list:
-                            tomato.speed /= 2
+                        speed /= 2
                         delay += 5
                         respawn -= 1
 
@@ -131,7 +133,7 @@ while main:
                 if len(tomato_sprites_list) < 20:
                     # creates tomato sprite
                     mousex, mousey = pygame.mouse.get_pos()
-                    tomato = Tomato(mousex, mousey, diffSpeeds[currDiff])
+                    tomato = Tomato(mousex, mousey, speed)
 
                     tomato_sprites_list.add(tomato)
 

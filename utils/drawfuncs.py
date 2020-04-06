@@ -38,4 +38,4 @@ def draw_hiscores(screen, font, time):
 
 def draw_difficulty(screen, font, difficulty):
     text = font.render(difficulty, 1, black)
-    draw(screen, text, (800, 550))
+    draw(screen, text, (750, 550))
