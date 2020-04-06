@@ -58,11 +58,6 @@ class Tomato(pygame.sprite.Sprite):
 
         self.xdir = (mx - self.rect.x)/50
         self.ydir = (self.rect.y - my)/50
-    #
-    # def start_pos(self):
-    #     randx = random.randint(1, 891)
-    #     self.rect.x = randx
-    #     self.rect.y = 608
 
     def update(self):
         """ Move the bullet. """
