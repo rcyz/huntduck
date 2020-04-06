@@ -118,7 +118,6 @@ while main:
 
             # updates the position of all the sprites
             all_sprites_list.update()
-            i = 0
             # for loop updating each tomato in turn
             # and checking if events have happened
             for tomato in tomato_sprites_list:
@@ -126,12 +125,9 @@ while main:
                 if tomato.rect.colliderect(duck.rect):
                     lives -= 1
                     tomato_sprites_list.remove(tomato)
-                    i -= 1
                 elif tomato.rect.x > 891 or tomato.rect.x < 0 or tomato.rect.y > 608 or tomato.rect.y < 40:
                     tomato_sprites_list.remove(tomato)
-                    i -= 1
 
-                i += 1
                 # updates the position of the tomato
                 tomato.update()
 
@@ -216,4 +212,4 @@ while main:
                         game_over = False
                         game = False
                         menu = True
-            clock.tick(30)
+            clock.tick(60)
