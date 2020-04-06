@@ -45,10 +45,10 @@ class Dog(pygame.sprite.Sprite):
 class Tomato(pygame.sprite.Sprite):
     """ This class represents the bullet . """
 
-    def __init__(self, mx, my):
+    def __init__(self, mx, my, speed):
         # Call the parent class (Sprite) constructor
         super(Tomato, self).__init__()
-        self.speed = 50
+        self.speed = speed
 
         self.image = pygame.image.load('images/tomato.png')
 

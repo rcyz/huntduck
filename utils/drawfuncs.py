@@ -31,6 +31,11 @@ def draw_finaltime(screen, font, time,):
 
 def draw_hiscores(screen, font, time):
     text = font.render('Hiscore', 1, black)
-    draw(screen, text, (10, 508))
+    draw(screen, text, (10, 528))
     text = font.render(str(time), 1, black)
-    draw(screen, text, (40, 538))
+    draw(screen, text, (40, 558))
+
+
+def draw_difficulty(screen, font, difficulty):
+    text = font.render(difficulty, 1, black)
+    draw(screen, text, (800, 550))

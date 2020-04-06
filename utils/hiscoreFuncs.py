@@ -1,8 +1,3 @@
-import os
-
-# a subroutine to save the users score to a text file
-
-
 def save_hiscores(time):
 
     timesfile = open('hiscores.txt', 'a')

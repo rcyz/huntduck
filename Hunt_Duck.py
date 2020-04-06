@@ -32,6 +32,8 @@ all_sprites_list.add(dog)
 duck = Duck()
 all_sprites_list.add(duck)
 
+diffIndex = 0
+
 #       --- MAIN LOOP ---
 
 while main:
@@ -57,9 +59,17 @@ while main:
         'paused': 0,
         'totalpaused': 0
     }
+    diffSpeeds = {
+        'Easy': 100,
+        'Medium': 50,
+        'Hard': 20,
+        'Insane': 10,
+        'Fearless': 5
+    }
     lives = 5
     respawn = 10
     delay = 0
+    currDiff = str(list(diffSpeeds.keys())[diffIndex])
 
     # game loop
     while game:
@@ -68,6 +78,7 @@ while main:
             # calculate high score and draw to screen
             best_time = calc_hiscores()
             draw_hiscores(screen, gamefont, best_time)
+            draw_difficulty(screen, gamefont, currDiff)
 
             # grab the mouse location
             mousex, mousey = pygame.mouse.get_pos()
@@ -90,6 +101,14 @@ while main:
                             menu = False
                             playing = True
                             start = time.process_time()
+                elif event.type == KEYDOWN:
+                    if event.key == K_RIGHT:
+                        if diffIndex < (len(diffSpeeds)-1):
+                            diffIndex += 1
+                    elif event.key == K_LEFT:
+                        if diffIndex > 0:
+                            diffIndex -= 1
+                    currDiff = str(list(diffSpeeds.keys())[diffIndex])
 
         # playing loop
         while playing:
@@ -112,7 +131,7 @@ while main:
                 if len(tomato_sprites_list) < 20:
                     # creates tomato sprite
                     mousex, mousey = pygame.mouse.get_pos()
-                    tomato = Tomato(mousex, mousey)
+                    tomato = Tomato(mousex, mousey, diffSpeeds[currDiff])
 
                     tomato_sprites_list.add(tomato)
 
