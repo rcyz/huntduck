@@ -4,7 +4,6 @@ import time
 from pygame.locals import *
 from utils.classes import *
 from utils.hiscoreFuncs import *
-from utils.drawfuncs import *
 
 pygame.init()
 
@@ -19,6 +18,8 @@ titlescreen = pygame.image.load('images/titlescreen.png')
 gameoverscreen = pygame.image.load('images/losing.png')
 gamefont = pygame.font.Font(None, 42)
 endfont = pygame.font.Font(None, 100)
+white = (255, 255, 255)
+black = (0,   0,   0)
 
 # main loop condition
 main = True
@@ -36,20 +37,22 @@ respawn = 10
 
 def createLabels():
     menuLabels = {
-        'Hiscores': Label("Hiscore: ", 10, 528, screen),
-        'Difficulty': Label(currDiff, 750, 550, screen)
+        'Hiscores': Label("Hiscore: ", 10, 528, screen, 42),
+        'Difficulty': Label(currDiff, 750, 550, screen, 42)
     }
     gameLabels = {
-        'Lives': Label('Lives: ', 30, 10, screen),
-        'Timer': Label('Time: ', 750, 10, screen)
+        'Lives': Label('Lives: ', 30, 10, screen, 42),
+        'Timer': Label('Time: ', 750, 10, screen, 42)
     }
 
-    return menuLabels, gameLabels
+    finalLabel = Label("", 710, 363, screen, 100)
+
+    return menuLabels, gameLabels, finalLabel
 
 
 # Sprite lists
 all_sprites_list = pygame.sprite.Group()
-menuLabels, gameLabels = createLabels()
+menuLabels, gameLabels, finalLabel = createLabels()
 
 dog = Dog()
 all_sprites_list.add(dog)
@@ -93,7 +96,7 @@ while main:
             menuLabels['Hiscores'].updateText('Hiscores: ' + best_time)
             menuLabels['Difficulty'].updateText(currDiff)
             for label in menuLabels.values():
-                label.draw()
+                label.draw(black)
 
             pygame.display.update()
 
@@ -171,7 +174,7 @@ while main:
             # drawing the background, timer and sprites to the screen
             screen.blit(backgroundImg, (0, 0))
             for label in gameLabels.values():
-                label.draw()
+                label.draw(black)
             all_sprites_list.draw(screen)
             tomato_sprites_list.draw(screen)
 
@@ -205,7 +208,7 @@ while main:
                 # draws the pause screen, lives and timer to the screen
                 screen.blit(pausescreen, (0, 0))
                 for label in gameLabels.values():
-                    label.draw()
+                    label.draw(black)
 
                 pygame.display.update()
 
@@ -234,7 +237,8 @@ while main:
             while game_over:
                 # draw the game over screen and final time to the screen
                 screen.blit(gameoverscreen, (0, 0))
-                draw_finaltime(screen, endfont, finaltime)
+                finalLabel.updateText(str(finaltime) + "s")
+                finalLabel.draw(white)
                 pygame.display.update()
                 # events
                 for event in pygame.event.get():
