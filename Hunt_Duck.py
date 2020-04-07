@@ -16,8 +16,7 @@ backgroundImg = pygame.image.load('images/background.png')
 pausescreen = pygame.image.load('images/pausescreen.png')
 titlescreen = pygame.image.load('images/titlescreen.png')
 gameoverscreen = pygame.image.load('images/losing.png')
-gamefont = pygame.font.Font(None, 42)
-endfont = pygame.font.Font(None, 100)
+
 white = (255, 255, 255)
 black = (0,   0,   0)
 
