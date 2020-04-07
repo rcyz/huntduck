@@ -1,3 +1,6 @@
+from utils.classes import *
+
+
 def save_hiscores(time):
 
     timesfile = open('hiscores.txt', 'a')
@@ -35,3 +38,18 @@ def calc_hiscores():
     top_time = top_time[:-1]
     timesfile.close()
     return(top_time)
+
+
+def createLabels(screen):
+    menuLabels = {
+        'Hiscores': Label("Hiscore: ", 10, 528, screen, 42),
+        'Difficulty': Label('Easy', 750, 550, screen, 42)
+    }
+    gameLabels = {
+        'Lives': Label('Lives: ', 30, 10, screen, 42),
+        'Timer': Label('Time: ', 750, 10, screen, 42)
+    }
+
+    finalLabel = Label("", 710, 363, screen, 100)
+
+    return menuLabels, gameLabels, finalLabel

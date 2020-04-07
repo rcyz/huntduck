@@ -3,7 +3,7 @@ import sys
 import time
 from pygame.locals import *
 from utils.classes import *
-from utils.hiscoreFuncs import *
+from utils.funcs import *
 
 pygame.init()
 
@@ -31,28 +31,11 @@ diffSpeeds = {
     'Insane': 10,
     'Fearless': 5
 }
-currDiff = str(list(diffSpeeds.keys())[diffIndex])
 respawn = 10
-
-
-def createLabels():
-    menuLabels = {
-        'Hiscores': Label("Hiscore: ", 10, 528, screen, 42),
-        'Difficulty': Label(currDiff, 750, 550, screen, 42)
-    }
-    gameLabels = {
-        'Lives': Label('Lives: ', 30, 10, screen, 42),
-        'Timer': Label('Time: ', 750, 10, screen, 42)
-    }
-
-    finalLabel = Label("", 710, 363, screen, 100)
-
-    return menuLabels, gameLabels, finalLabel
-
 
 # Sprite lists
 all_sprites_list = pygame.sprite.Group()
-menuLabels, gameLabels, finalLabel = createLabels()
+menuLabels, gameLabels, finalLabel = createLabels(screen)
 
 dog = Dog()
 all_sprites_list.add(dog)
@@ -85,6 +68,7 @@ while main:
     lives = 5
     delay = 0
 
+    currDiff = str(list(diffSpeeds.keys())[diffIndex])
     speed = diffSpeeds[currDiff]
 
     # game loop
