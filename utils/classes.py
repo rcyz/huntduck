@@ -6,11 +6,13 @@ import random
 class Screen():
     def __init__(self):
         self.screen = pygame.display.set_mode((891, 608))
-
-        self.skinNumber = 0
+        self.skinNames = ['default']
+        self.skinNum = 0
         pygame.display.set_caption('Hunt Duck')
-        self.skinNames = self.loadSkinNames()
-        self.loadDefaultSkin()
+        self.skinNames += self.loadSkinNames()
+        self.skinNames = list(dict.fromkeys(self.skinNames))
+        print(self.skinNames)
+        self.loadSkin(self.skinNames, self.skinNum)
 
     def drawScreen(self, name):
         if name == 'title':
@@ -31,14 +33,18 @@ class Screen():
         list.draw(self.screen)
 
     def increaseSkin(self):
-        if self.skinNumber < len(self.skinNames) - 1:
-            self.skinNumber += 1
-            self.loadSkin(self.skinNames, self.skinNumber)
+        if self.skinNum == len(self.skinNames) - 1:
+            self.skinNum = 0
+        else:
+            self.skinNum += 1
+        self.loadSkin(self.skinNames, self.skinNum)
 
     def decreaseSkin(self):
-        if self.skinNumber > 0:
-            self.skinNumber -= 1
-            self.loadSkin(self.skinNames, self.skinNumber)
+        if self.skinNum == 0:
+            self.skinNum = len(self.skinNames) - 1
+        else:
+            self.skinNum -= 1
+        self.loadSkin(self.skinNames, self.skinNum)
 
     def loadSkinNames(self):
         skins = [f.name for f in os.scandir('skins') if f.is_dir()]
@@ -53,15 +59,8 @@ class Screen():
         self.gameoverscreen = pygame.image.load(dir + '/losing.png')
         self.winscreen = pygame.image.load(dir + '/completion.png')
 
-    def loadDefaultSkin(self):
-        self.background = pygame.image.load('skins/default/background.png')
-        self.pausescreen = pygame.image.load('skins/default/pausescreen.png')
-        self.titlescreen = pygame.image.load('skins/default/titlescreen.png')
-        self.gameoverscreen = pygame.image.load('skins/default/losing.png')
-        self.winscreen = pygame.image.load('skins/default/completion.png')
-
     def getFolder(self):
-        return 'skins/' + str(self.skinNames[self.skinNumber])
+        return 'skins/' + str(self.skinNames[self.skinNum])
 
 
 class Player(pygame.sprite.Sprite):
