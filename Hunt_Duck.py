@@ -19,20 +19,20 @@ black = (0,   0,   0)
 main = True
 diffIndex = 0
 diffSpeeds = {
-    'Easy': 100,
-    'Medium': 50,
-    'Hard': 20,
-    'Insane': 10,
-    'Fearless': 5
+    'Easy': 200,
+    'Medium': 100,
+    'Hard': 50,
+    'Insane': 25,
+    'Fearless': 10
 }
 respawn = 10
 
 # Sprite lists
-all_sprites_list = pygame.sprite.Group()
+player_sprite = pygame.sprite.Group()
 menuLabels, gameLabels, finalLabel = createLabels(screen)
 
 player = Player()
-all_sprites_list.add(player)
+player_sprite.add(player)
 
 while main:
 
@@ -68,7 +68,7 @@ while main:
             screen.drawScreen('title')
             # calculate high score and draw to screen
             best_time = calc_hiscores()
-            menuLabels['Hiscores'].updateText('Hiscores: ' + best_time)
+            menuLabels['Hiscores'].updateText('Hiscore: ' + best_time)
             menuLabels['Difficulty'].updateText(currDiff)
             for label in menuLabels.values():
                 label.draw(black)
@@ -131,12 +131,12 @@ while main:
                 if len(bullet_list) < 20:
                     # creates tomato sprite
                     mousex, mousey = pygame.mouse.get_pos()
-                    bullet = Bullet(mousex, mousey, speed)
+                    bullet = Bullet(mousex, mousey, speed, screen)
 
                     bullet_list.add(bullet)
 
             # updates the position of all the sprites
-            all_sprites_list.update()
+            player.update()
             # for loop updating each tomato in turn
             # and checking if events have happened
             for bullet in bullet_list:
@@ -156,7 +156,7 @@ while main:
             screen.drawScreen('bg')
             for label in gameLabels.values():
                 label.draw(black)
-            screen.drawSprites(all_sprites_list)
+            screen.drawSprites(player_sprite)
             screen.drawSprites(bullet_list)
 
             # checks if the duck has ran out of lives

@@ -9,8 +9,8 @@ class Screen():
 
         self.skinNumber = 0
         pygame.display.set_caption('Hunt Duck')
-        self.skins = self.loadSkins()
-        self.loadSkin(self.skins, self.skinNumber)
+        self.skinNames = self.loadSkinNames()
+        self.loadDefaultSkin()
 
     def drawScreen(self, name):
         if name == 'title':
@@ -31,16 +31,16 @@ class Screen():
         list.draw(self.screen)
 
     def increaseSkin(self):
-        if self.skinNumber < len(self.skins) - 1:
+        if self.skinNumber < len(self.skinNames) - 1:
             self.skinNumber += 1
-            self.loadSkin(self.skins, self.skinNumber)
+            self.loadSkin(self.skinNames, self.skinNumber)
 
     def decreaseSkin(self):
         if self.skinNumber > 0:
             self.skinNumber -= 1
-            self.loadSkin(self.skins, self.skinNumber)
+            self.loadSkin(self.skinNames, self.skinNumber)
 
-    def loadSkins(self):
+    def loadSkinNames(self):
         skins = [f.name for f in os.scandir('skins') if f.is_dir()]
         return skins
 
@@ -53,8 +53,15 @@ class Screen():
         self.gameoverscreen = pygame.image.load(dir + '/losing.png')
         self.winscreen = pygame.image.load(dir + '/completion.png')
 
+    def loadDefaultSkin(self):
+        self.background = pygame.image.load('skins/default/background.png')
+        self.pausescreen = pygame.image.load('skins/default/pausescreen.png')
+        self.titlescreen = pygame.image.load('skins/default/titlescreen.png')
+        self.gameoverscreen = pygame.image.load('skins/default/losing.png')
+        self.winscreen = pygame.image.load('skins/default/completion.png')
+
     def getFolder(self):
-        return 'skins/' + str(self.skins[self.skinNumber])
+        return 'skins/' + str(self.skinNames[self.skinNumber])
 
 
 class Player(pygame.sprite.Sprite):
@@ -86,12 +93,14 @@ class Player(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     """ This class represents the bullet . """
 
-    def __init__(self, mx, my, speed):
+    def __init__(self, mx, my, speed, screen):
         # Call the parent class (Sprite) constructor
         super(Bullet, self).__init__()
         self.speed = speed
 
-        self.image = pygame.image.load('skins/default/bullet.png')
+        self.imageLoc = screen.getFolder() + '/bullet.png'
+
+        self.image = pygame.image.load(self.imageLoc)
 
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(1, 891)
