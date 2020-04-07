@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+from utils import ptext
 
 
 class Screen():
@@ -131,40 +132,16 @@ class Label():
         self.x = x
         self.y = y
         self.screen = screen
+        self.fontsize = fontsize
         self.gamefont = pygame.font.Font(None, fontsize)
 
     def draw(self, colour):
         white = (255, 255, 255)
-        black = (1, 1, 1)
-        #label = self.gamefont.render(self.text, 1, colour)
-        label = self.textOutline(self.gamefont, self.text, white, black)
-        self.screen.drawLabel(label, self.x, self.y)
+        black = (0, 0, 0)
+        label = self.gamefont.render(self.text, 1, colour)
+        ptext.draw(self.text, (self.x, self.y), owidth=1.5,
+                   ocolor=black, color=white, fontsize=self.fontsize)
+        # self.screen.drawLabel(label, self.x, self.y)
 
     def updateText(self, text):
         self.text = text
-
-    def textOutline(self, font, message, fontcolor, outlinecolor):
-        base = font.render(message, 0, fontcolor)
-        outline = self.textHollow(font, message, outlinecolor)
-        img = pygame.Surface(outline.get_size(), 16)
-        img.blit(base, (1, 1))
-        img.blit(outline, (0, 0))
-        img.set_colorkey(0)
-        return img
-
-    def textHollow(self, font, message, fontcolor):
-        notcolor = [c ^ 0xFF for c in fontcolor]
-        base = font.render(message, 0, fontcolor, notcolor)
-        size = base.get_width() + 2, base.get_height() + 2
-        img = pygame.Surface(size, 16)
-        img.fill(notcolor)
-        base.set_colorkey(0)
-        img.blit(base, (0, 0))
-        img.blit(base, (2, 0))
-        img.blit(base, (0, 2))
-        img.blit(base, (2, 2))
-        base.set_colorkey(0)
-        base.set_palette_at(1, notcolor)
-        img.blit(base, (1, 1))
-        img.set_colorkey(notcolor)
-        return img
