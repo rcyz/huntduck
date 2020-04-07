@@ -64,3 +64,21 @@ class Tomato(pygame.sprite.Sprite):
 
         self.rect.x += self.xdir/self.speed
         self.rect.y -= self.ydir/self.speed
+
+
+class Label():
+    def __init__(self, text, x, y, screen):
+        super(Label, self).__init__()
+        self.text = text
+        self.x = x
+        self.y = y
+        self.screen = screen
+        self.gamefont = pygame.font.Font(None, 42)
+
+    def draw(self):
+        black = (0, 0, 0)
+        label = self.gamefont.render(self.text, 1, black)
+        self.screen.blit(label, (self.x, self.y))
+
+    def updateText(self, text):
+        self.text = text

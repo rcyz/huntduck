@@ -30,11 +30,26 @@ diffSpeeds = {
     'Insane': 10,
     'Fearless': 5
 }
+currDiff = str(list(diffSpeeds.keys())[diffIndex])
 respawn = 10
+
+
+def createLabels():
+    menuLabels = {
+        'Hiscores': Label("Hiscore: ", 10, 528, screen),
+        'Difficulty': Label(currDiff, 750, 550, screen)
+    }
+    gameLabels = {
+        'Lives': Label('Lives: ', 30, 10, screen),
+        'Timer': Label('Time: ', 750, 10, screen)
+    }
+
+    return menuLabels, gameLabels
 
 
 # Sprite lists
 all_sprites_list = pygame.sprite.Group()
+menuLabels, gameLabels = createLabels()
 
 dog = Dog()
 all_sprites_list.add(dog)
@@ -51,7 +66,6 @@ while main:
     # loop conditions
     main = True
     menu = True
-    draw = False
     game = True
     playing = True
     paused = False
@@ -67,7 +81,7 @@ while main:
     }
     lives = 5
     delay = 0
-    currDiff = str(list(diffSpeeds.keys())[diffIndex])
+
     speed = diffSpeeds[currDiff]
 
     # game loop
@@ -76,11 +90,10 @@ while main:
             screen.blit(titlescreen, (0, 0))
             # calculate high score and draw to screen
             best_time = calc_hiscores()
-            draw_hiscores(screen, gamefont, best_time)
-            draw_difficulty(screen, gamefont, currDiff)
-
-            # grab the mouse location
-            mousex, mousey = pygame.mouse.get_pos()
+            menuLabels['Hiscores'].updateText('Hiscores: ' + best_time)
+            menuLabels['Difficulty'].updateText(currDiff)
+            for label in menuLabels.values():
+                label.draw()
 
             pygame.display.update()
 
@@ -91,6 +104,8 @@ while main:
                     sys.exit()
 
                 elif event.type == MOUSEBUTTONDOWN:
+
+                    mousex, mousey = pygame.mouse.get_pos()
                     # grab the status of the mouse buttons and check if the left
                     # mouse button is pressed
                     mousestatus = pygame.mouse.get_pressed()
@@ -118,15 +133,14 @@ while main:
 
             # works out time played and renders the label
             elapsed = int(time.process_time() - start - pause['totalpaused'])
+            elapsedInt = int(float(time.process_time() - start - pause['totalpaused']) * 1000)
+
             if respawn != 0:
                 if elapsed > delay:
                     if elapsed % 1 == 0:
                         speed /= 2
                         delay += 5
                         respawn -= 1
-
-            elapsedInt = int(float(time.process_time() - start - pause['totalpaused']) * 1000)
-            draw_timer(screen, gamefont, elapsed)
 
             # creating bullet sprites and adding them to sprite list
             if elapsedInt % respawn == 0:
@@ -152,12 +166,14 @@ while main:
                 # updates the position of the tomato
                 tomato.update()
 
+            gameLabels['Timer'].updateText('Time: ' + str(elapsed))
+            gameLabels['Lives'].updateText('Lives: ' + str(lives))
             # drawing the background, timer and sprites to the screen
             screen.blit(backgroundImg, (0, 0))
-            draw_timer(screen, gamefont, elapsed)
+            for label in gameLabels.values():
+                label.draw()
             all_sprites_list.draw(screen)
             tomato_sprites_list.draw(screen)
-            draw_lives(screen, gamefont, lives)
 
             # checks if the duck has ran out of lives
             if lives <= 0:
@@ -188,8 +204,8 @@ while main:
 
                 # draws the pause screen, lives and timer to the screen
                 screen.blit(pausescreen, (0, 0))
-                draw_timer(screen, gamefont, times)
-                draw_lives(screen, gamefont, lives)
+                for label in gameLabels.values():
+                    label.draw()
 
                 pygame.display.update()
 
