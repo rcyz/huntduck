@@ -9,7 +9,6 @@ pygame.init()
 
 # initialising screen
 screen = Screen()
-# screen = pygame.display.set_mode((891, 608))
 pygame.display.set_caption('Hunt Duck')
 clock = pygame.time.Clock()
 
@@ -32,17 +31,14 @@ respawn = 10
 all_sprites_list = pygame.sprite.Group()
 menuLabels, gameLabels, finalLabel = createLabels(screen)
 
-dog = Dog()
-all_sprites_list.add(dog)
-
-duck = Duck()
-all_sprites_list.add(duck)
+player = Player()
+all_sprites_list.add(player)
 
 while main:
 
     # creates the tomato list and direction lists
     # also wipes them everytime the game restarts
-    tomato_sprites_list = pygame.sprite.Group()
+    bullet_list = pygame.sprite.Group()
 
     # loop conditions
     main = True
@@ -69,7 +65,6 @@ while main:
     # game loop
     while game:
         while menu:
-            # screen.screen.blit(titlescreen, (0, 0))
             screen.drawScreen('title')
             # calculate high score and draw to screen
             best_time = calc_hiscores()
@@ -105,6 +100,12 @@ while main:
                     elif event.key == K_LEFT:
                         if diffIndex > 0:
                             diffIndex -= 1
+                    elif event.key == K_UP:
+                        screen.increaseSkin()
+                        player.updateSkin(screen)
+                    elif event.key == K_DOWN:
+                        screen.decreaseSkin()
+                        player.updateSkin(screen)
                     elif event.key == K_ESCAPE:
                         pygame.quit()
                         sys.exit()
@@ -127,39 +128,36 @@ while main:
 
             # creating bullet sprites and adding them to sprite list
             if elapsedInt % respawn == 0:
-                if len(tomato_sprites_list) < 20:
+                if len(bullet_list) < 20:
                     # creates tomato sprite
                     mousex, mousey = pygame.mouse.get_pos()
-                    tomato = Tomato(mousex, mousey, speed)
+                    bullet = Bullet(mousex, mousey, speed)
 
-                    tomato_sprites_list.add(tomato)
+                    bullet_list.add(bullet)
 
             # updates the position of all the sprites
             all_sprites_list.update()
             # for loop updating each tomato in turn
             # and checking if events have happened
-            for tomato in tomato_sprites_list:
+            for bullet in bullet_list:
                 # checks for collision between duck and tomato
-                if tomato.rect.colliderect(duck.rect):
+                if bullet.rect.colliderect(player.rect):
                     lives -= 1
-                    tomato_sprites_list.remove(tomato)
-                elif tomato.rect.x > 891 or tomato.rect.x < 0 or tomato.rect.y > 608 or tomato.rect.y < 40:
-                    tomato_sprites_list.remove(tomato)
+                    bullet_list.remove(bullet)
+                elif bullet.rect.x > 891 or bullet.rect.x < 0 or bullet.rect.y > 608 or bullet.rect.y < 40:
+                    bullet_list.remove(bullet)
 
                 # updates the position of the tomato
-                tomato.update()
+                bullet.update()
 
             gameLabels['Timer'].updateText('Time: ' + str(elapsed))
             gameLabels['Lives'].updateText('Lives: ' + str(lives))
             # drawing the background, timer and sprites to the screen
-            # screen.blit(backgroundImg, (0, 0))
             screen.drawScreen('bg')
             for label in gameLabels.values():
                 label.draw(black)
             screen.drawSprites(all_sprites_list)
-            screen.drawSprites(tomato_sprites_list)
-            # all_sprites_list.draw(screen)
-            # tomato_sprites_list.draw(screen)
+            screen.drawSprites(bullet_list)
 
             # checks if the duck has ran out of lives
             if lives <= 0:
@@ -189,7 +187,6 @@ while main:
             while paused:
 
                 # draws the pause screen, lives and timer to the screen
-                # screen.blit(pausescreen, (0, 0))
                 screen.drawScreen('pause')
                 for label in gameLabels.values():
                     label.draw(black)
@@ -220,8 +217,10 @@ while main:
             # game over loop
             while game_over:
                 # draw the game over screen and final time to the screen
-                # screen.blit(gameoverscreen, (0, 0))
-                screen.drawScreen('go')
+                if finaltime > best_time:
+                    screen.drawScreen('win')
+                else:
+                    screen.drawScreen('go')
                 finalLabel.updateText(str(finaltime) + "s")
                 finalLabel.draw(white)
                 pygame.display.update()

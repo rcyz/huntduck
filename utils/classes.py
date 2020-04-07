@@ -1,19 +1,16 @@
 import pygame
+import os
 import random
-
-#       --- Classes ---
 
 
 class Screen():
     def __init__(self):
         self.screen = pygame.display.set_mode((891, 608))
-        pygame.display.set_caption('Hunt Duck')
-        defaultDir = 'skins/default/'
 
-        self.background = pygame.image.load(defaultDir + 'background.png')
-        self.pausescreen = pygame.image.load(defaultDir + 'pausescreen.png')
-        self.titlescreen = pygame.image.load(defaultDir + 'titlescreen.png')
-        self.gameoverscreen = pygame.image.load(defaultDir + 'losing.png')
+        self.skinNumber = 0
+        pygame.display.set_caption('Hunt Duck')
+        self.skins = self.loadSkins()
+        self.loadSkin(self.skins, self.skinNumber)
 
     def drawScreen(self, name):
         if name == 'title':
@@ -24,6 +21,8 @@ class Screen():
             self.screen.blit(self.gameoverscreen, (0, 0))
         elif name == 'bg':
             self.screen.blit(self.background, (0, 0))
+        elif name == 'win':
+            self.screen.blit(self.winscreen, (0, 0))
 
     def drawLabel(self, label, x, y):
         self.screen.blit(label, (x, y))
@@ -31,16 +30,42 @@ class Screen():
     def drawSprites(self, list):
         list.draw(self.screen)
 
+    def increaseSkin(self):
+        if self.skinNumber < len(self.skins) - 1:
+            self.skinNumber += 1
+            self.loadSkin(self.skins, self.skinNumber)
 
-class Duck(pygame.sprite.Sprite):
+    def decreaseSkin(self):
+        if self.skinNumber > 0:
+            self.skinNumber -= 1
+            self.loadSkin(self.skins, self.skinNumber)
+
+    def loadSkins(self):
+        skins = [f.name for f in os.scandir('skins') if f.is_dir()]
+        return skins
+
+    def loadSkin(self, skins, skinNum):
+        dir = 'skins/' + skins[skinNum]
+        print(dir)
+        self.background = pygame.image.load(dir + '/background.png')
+        self.pausescreen = pygame.image.load(dir + '/pausescreen.png')
+        self.titlescreen = pygame.image.load(dir + '/titlescreen.png')
+        self.gameoverscreen = pygame.image.load(dir + '/losing.png')
+        self.winscreen = pygame.image.load(dir + '/completion.png')
+
+    def getFolder(self):
+        return 'skins/' + str(self.skins[self.skinNumber])
+
+
+class Player(pygame.sprite.Sprite):
     """ This class represents the Player. """
 
     def __init__(self):
         """ Set up the player on creation. """
         # Call the parent class (Sprite) constructor
-        super(Duck, self).__init__()
+        super(Player, self).__init__()
 
-        self.image = pygame.image.load('skins/default/duck.png')
+        self.image = pygame.image.load('skins/default/player.png')
 
         self.rect = self.image.get_rect()
 
@@ -54,31 +79,19 @@ class Duck(pygame.sprite.Sprite):
         self.rect.x = (pos[0]-28)
         self.rect.y = (pos[1]-20)
 
-
-class Dog(pygame.sprite.Sprite):
-
-    def __init__(self):
-        super(Dog, self).__init__()
-
-        self.image = pygame.image.load('skins/default/dog.png')
-
-        self.rect = self.image.get_rect()
-
-    def update(self):
-
-        self.rect.x = 350
-        self.rect.y = 450
+    def updateSkin(self, screen):
+        self.image = pygame.image.load(screen.getFolder() + '/player.png')
 
 
-class Tomato(pygame.sprite.Sprite):
+class Bullet(pygame.sprite.Sprite):
     """ This class represents the bullet . """
 
     def __init__(self, mx, my, speed):
         # Call the parent class (Sprite) constructor
-        super(Tomato, self).__init__()
+        super(Bullet, self).__init__()
         self.speed = speed
 
-        self.image = pygame.image.load('skins/default/tomato.png')
+        self.image = pygame.image.load('skins/default/bullet.png')
 
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(1, 891)
