@@ -18,11 +18,13 @@ class Screen():
         if name == 'title':
             self.screen.blit(self.titlescreen, (0, 0))
         elif name == 'pause':
-            self.screen.blit(self.pausescreen, (0, 0))
+            self.screen.fill((255, 255, 255))
+            self.screen.blit(self.pausescreen, (0, 50))
         elif name == 'go':
             self.screen.blit(self.gameoverscreen, (0, 0))
         elif name == 'bg':
-            self.screen.blit(self.background, (0, 0))
+            self.screen.fill((255, 255, 255))
+            self.screen.blit(self.background, (0, 50))
         elif name == 'win':
             self.screen.blit(self.winscreen, (0, 0))
 
@@ -53,11 +55,16 @@ class Screen():
     def loadSkin(self, skins, skinNum):
         dir = 'skins/' + skins[skinNum]
         print(dir)
-        self.background = pygame.image.load(dir + '/background.png')
-        self.pausescreen = pygame.image.load(dir + '/pausescreen.png')
-        self.titlescreen = pygame.image.load(dir + '/titlescreen.png')
-        self.gameoverscreen = pygame.image.load(dir + '/losing.png')
-        self.winscreen = pygame.image.load(dir + '/completion.png')
+        self.background = pygame.transform.scale(
+            pygame.image.load(dir + '/background.png'), (891, 558))
+        self.pausescreen = pygame.transform.scale(
+            pygame.image.load(dir + '/pausescreen.png'), (891, 558))
+        self.titlescreen = pygame.transform.scale(
+            pygame.image.load(dir + '/titlescreen.png'), (891, 608))
+        self.gameoverscreen = pygame.transform.scale(
+            pygame.image.load(dir + '/losing.png'), (891, 608))
+        self.winscreen = pygame.transform.scale(
+            pygame.image.load(dir + '/completion.png'), (891, 608))
 
     def getFolder(self):
         return 'skins/' + str(self.skinNames[self.skinNum])
