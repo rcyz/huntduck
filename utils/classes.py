@@ -73,6 +73,7 @@ class Player(pygame.sprite.Sprite):
 
         self.image = pygame.image.load('skins/default/player.png')
 
+        self.image = pygame.transform.scale(self.image, (70, 40))
         self.rect = self.image.get_rect()
 
     def update(self):
@@ -86,7 +87,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = (pos[1]-20)
 
     def updateSkin(self, screen):
-        self.image = pygame.image.load(screen.getFolder() + '/player.png')
+        self.image = pygame.transform.scale(pygame.image.load(
+            screen.getFolder() + '/player.png'), (70, 40))
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -99,7 +101,7 @@ class Bullet(pygame.sprite.Sprite):
 
         self.imageLoc = screen.getFolder() + '/bullet.png'
 
-        self.image = pygame.image.load(self.imageLoc)
+        self.image = pygame.transform.scale(pygame.image.load(self.imageLoc), (40, 40))
 
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(1, 891)
@@ -125,8 +127,37 @@ class Label():
         self.gamefont = pygame.font.Font(None, fontsize)
 
     def draw(self, colour):
-        label = self.gamefont.render(self.text, 1, colour)
+        white = (255, 255, 255)
+        black = (1, 1, 1)
+        #label = self.gamefont.render(self.text, 1, colour)
+        label = self.textOutline(self.gamefont, self.text, white, black)
         self.screen.drawLabel(label, self.x, self.y)
 
     def updateText(self, text):
         self.text = text
+
+    def textOutline(self, font, message, fontcolor, outlinecolor):
+        base = font.render(message, 0, fontcolor)
+        outline = self.textHollow(font, message, outlinecolor)
+        img = pygame.Surface(outline.get_size(), 16)
+        img.blit(base, (1, 1))
+        img.blit(outline, (0, 0))
+        img.set_colorkey(0)
+        return img
+
+    def textHollow(self, font, message, fontcolor):
+        notcolor = [c ^ 0xFF for c in fontcolor]
+        base = font.render(message, 0, fontcolor, notcolor)
+        size = base.get_width() + 2, base.get_height() + 2
+        img = pygame.Surface(size, 16)
+        img.fill(notcolor)
+        base.set_colorkey(0)
+        img.blit(base, (0, 0))
+        img.blit(base, (2, 0))
+        img.blit(base, (0, 2))
+        img.blit(base, (2, 2))
+        base.set_colorkey(0)
+        base.set_palette_at(1, notcolor)
+        img.blit(base, (1, 1))
+        img.set_colorkey(notcolor)
+        return img
