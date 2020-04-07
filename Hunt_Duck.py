@@ -8,14 +8,10 @@ from utils.funcs import *
 pygame.init()
 
 # initialising screen
-screen = pygame.display.set_mode((891, 608))
+screen = Screen()
+# screen = pygame.display.set_mode((891, 608))
 pygame.display.set_caption('Hunt Duck')
 clock = pygame.time.Clock()
-
-backgroundImg = pygame.image.load('images/background.png')
-pausescreen = pygame.image.load('images/pausescreen.png')
-titlescreen = pygame.image.load('images/titlescreen.png')
-gameoverscreen = pygame.image.load('images/losing.png')
 
 white = (255, 255, 255)
 black = (0,   0,   0)
@@ -73,7 +69,8 @@ while main:
     # game loop
     while game:
         while menu:
-            screen.blit(titlescreen, (0, 0))
+            # screen.screen.blit(titlescreen, (0, 0))
+            screen.drawScreen('title')
             # calculate high score and draw to screen
             best_time = calc_hiscores()
             menuLabels['Hiscores'].updateText('Hiscores: ' + best_time)
@@ -155,11 +152,14 @@ while main:
             gameLabels['Timer'].updateText('Time: ' + str(elapsed))
             gameLabels['Lives'].updateText('Lives: ' + str(lives))
             # drawing the background, timer and sprites to the screen
-            screen.blit(backgroundImg, (0, 0))
+            # screen.blit(backgroundImg, (0, 0))
+            screen.drawScreen('bg')
             for label in gameLabels.values():
                 label.draw(black)
-            all_sprites_list.draw(screen)
-            tomato_sprites_list.draw(screen)
+            screen.drawSprites(all_sprites_list)
+            screen.drawSprites(tomato_sprites_list)
+            # all_sprites_list.draw(screen)
+            # tomato_sprites_list.draw(screen)
 
             # checks if the duck has ran out of lives
             if lives <= 0:
@@ -189,7 +189,8 @@ while main:
             while paused:
 
                 # draws the pause screen, lives and timer to the screen
-                screen.blit(pausescreen, (0, 0))
+                # screen.blit(pausescreen, (0, 0))
+                screen.drawScreen('pause')
                 for label in gameLabels.values():
                     label.draw(black)
 
@@ -219,7 +220,8 @@ while main:
             # game over loop
             while game_over:
                 # draw the game over screen and final time to the screen
-                screen.blit(gameoverscreen, (0, 0))
+                # screen.blit(gameoverscreen, (0, 0))
+                screen.drawScreen('go')
                 finalLabel.updateText(str(finaltime) + "s")
                 finalLabel.draw(white)
                 pygame.display.update()
