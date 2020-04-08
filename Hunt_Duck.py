@@ -25,7 +25,6 @@ diffSpeeds = {
     'Insane': 25,
     'Fearless': 10
 }
-respawn = 10
 
 # Sprite lists
 player_sprite = pygame.sprite.Group()
@@ -58,6 +57,7 @@ while main:
     }
     lives = 5
     delay = 0
+    respawn = 10
 
     currDiff = str(list(diffSpeeds.keys())[diffIndex])
     speed = diffSpeeds[currDiff]
@@ -66,6 +66,7 @@ while main:
     while game:
         while menu:
             screen.drawScreen('title')
+            startRect = screen.drawStart()
             # calculate high score and draw to screen
             best_time = calc_hiscores()
             menuLabels['Hiscores'].updateText('Hiscore: ' + best_time)
@@ -81,18 +82,16 @@ while main:
                     pygame.quit()
                     sys.exit()
 
-                elif event.type == MOUSEBUTTONDOWN:
+                elif event.type == MOUSEBUTTONDOWN and event.button == 1:
 
-                    mousex, mousey = pygame.mouse.get_pos()
+                    mpos = pygame.mouse.get_pos()
                     # grab the status of the mouse buttons and check if the left
                     # mouse button is pressed
                     mousestatus = pygame.mouse.get_pressed()
-                    if mousestatus[0]:
-                        # check whether the mouse is over the start button
-                        if mousex > 320 and mousex < 550 and mousey > 400 and mousey < 460:
-                            menu = False
-                            playing = True
-                            start = time.process_time()
+                    if startRect.collidepoint(mpos):
+                        menu = False
+                        playing = True
+                        start = time.process_time()
                 elif event.type == KEYDOWN:
                     if event.key == K_RIGHT:
                         if diffIndex < (len(diffSpeeds)-1):
@@ -124,7 +123,8 @@ while main:
                     if elapsed % 1 == 0:
                         speed /= 2
                         delay += 5
-                        respawn -= 1
+                        if respawn > 1:
+                            respawn -= 1
 
             # creating bullet sprites and adding them to sprite list
             if elapsedInt % respawn == 0:
@@ -153,7 +153,7 @@ while main:
             gameLabels['Timer'].updateText('Time: ' + str(elapsed))
             gameLabels['Lives'].updateText('Lives: ' + str(lives))
             # drawing the background, timer and sprites to the screen
-            screen.drawScreen('bg')
+            screen.drawScreen('background')
             for label in gameLabels.values():
                 label.draw(black)
             screen.drawSprites(player_sprite)
@@ -220,7 +220,7 @@ while main:
                 if finaltime > best_time:
                     screen.drawScreen('win')
                 else:
-                    screen.drawScreen('go')
+                    screen.drawScreen('gameover')
                 finalLabel.updateText(str(finaltime) + "s")
                 finalLabel.draw(white)
                 pygame.display.update()

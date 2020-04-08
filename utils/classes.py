@@ -7,27 +7,19 @@ from utils import ptext
 class Screen():
     def __init__(self):
         self.screen = pygame.display.set_mode((891, 608))
-        self.skinNames = ['default']
         self.skinNum = 0
+        self.skinNames = self.loadSkinNames()
         pygame.display.set_caption('Hunt Duck')
-        self.skinNames += self.loadSkinNames()
-        self.skinNames = list(dict.fromkeys(self.skinNames))
-        print(self.skinNames)
-        self.loadSkin(self.skinNames, self.skinNum)
+        self.loadDefaultSkin()
 
     def drawScreen(self, name):
-        if name == 'title':
-            self.screen.blit(self.titlescreen, (0, 0))
-        elif name == 'pause':
+        playingScreens = ['background', 'pause']
+        bigScreens = ['title', 'gameover', 'win']
+        if name in playingScreens:
             self.screen.fill((255, 255, 255))
-            self.screen.blit(self.pausescreen, (0, 50))
-        elif name == 'go':
-            self.screen.blit(self.gameoverscreen, (0, 0))
-        elif name == 'bg':
-            self.screen.fill((255, 255, 255))
-            self.screen.blit(self.background, (0, 50))
-        elif name == 'win':
-            self.screen.blit(self.winscreen, (0, 0))
+            self.screen.blit(self.images[name], (0, 50))
+        elif name in bigScreens:
+            self.screen.blit(self.images[name], (0, 0))
 
     def drawLabel(self, label, x, y):
         self.screen.blit(label, (x, y))
@@ -50,25 +42,43 @@ class Screen():
         self.loadSkin(self.skinNames, self.skinNum)
 
     def loadSkinNames(self):
-        skins = [f.name for f in os.scandir('skins') if f.is_dir()]
+        skins = ['default']
+        skins += [f.name for f in os.scandir('skins') if f.is_dir()]
+        skins = list(dict.fromkeys(skins))
         return skins
 
     def loadSkin(self, skins, skinNum):
         dir = 'skins/' + skins[skinNum]
         print(dir)
-        self.background = pygame.transform.scale(
-            pygame.image.load(dir + '/background.png'), (891, 558))
-        self.pausescreen = pygame.transform.scale(
-            pygame.image.load(dir + '/pausescreen.png'), (891, 558))
-        self.titlescreen = pygame.transform.scale(
-            pygame.image.load(dir + '/titlescreen.png'), (891, 608))
-        self.gameoverscreen = pygame.transform.scale(
-            pygame.image.load(dir + '/losing.png'), (891, 608))
-        self.winscreen = pygame.transform.scale(
-            pygame.image.load(dir + '/completion.png'), (891, 608))
+        playingScreens = ['background', 'pause']
+        bigScreens = ['title', 'gameover', 'win']
+        for image in playingScreens:
+            try:
+                self.images[image] = pygame.transform.scale(pygame.image.load(dir + '/' + image + '.png'), (891, 558))
+            except:
+                pass
+        for image in bigScreens:
+            try:
+                self.images[image] = pygame.transform.scale(pygame.image.load(dir + '/' + image + '.png'), (891, 608))
+            except:
+                pass
 
     def getFolder(self):
         return 'skins/' + str(self.skinNames[self.skinNum])
+
+    def loadDefaultSkin(self):
+        self.images = {
+            'background': pygame.transform.scale(pygame.image.load('skins/default/background.png'), (891, 558)),
+            'pause': pygame.transform.scale(pygame.image.load('skins/default/pause.png'), (891, 558)),
+            'title': pygame.transform.scale(pygame.image.load('skins/default/title.png'), (891, 608)),
+            'gameover': pygame.transform.scale(pygame.image.load('skins/default/gameover.png'), (891, 608)),
+            'win': pygame.transform.scale(pygame.image.load('skins/default/win.png'), (891, 608)),
+            'start': pygame.transform.scale(pygame.image.load('skins/default/start.png'), (230, 60))
+        }
+
+    def drawStart(self):
+        start = self.screen.blit(self.images['start'], (320, 400))
+        return start
 
 
 class Player(pygame.sprite.Sprite):
@@ -138,10 +148,7 @@ class Label():
     def draw(self, colour):
         white = (255, 255, 255)
         black = (0, 0, 0)
-        label = self.gamefont.render(self.text, 1, colour)
-        ptext.draw(self.text, (self.x, self.y), owidth=1.5,
-                   ocolor=black, color=white, fontsize=self.fontsize)
-        # self.screen.drawLabel(label, self.x, self.y)
+        ptext.draw(self.text, (self.x, self.y), owidth=1.5, ocolor=black, color=white, fontsize=self.fontsize)
 
     def updateText(self, text):
         self.text = text
