@@ -68,6 +68,7 @@ while main:
 
     currDiff = str(list(diffSpeeds.keys())[diffIndex])
     speed = diffSpeeds[currDiff]
+    currSkin = screen.getSkinName()
 
     # game loop
     while game:
@@ -79,6 +80,7 @@ while main:
             best_time = load_hiscore()
             menuLabels['Hiscores'].updateText('Hiscore: ' + str(best_time))
             menuLabels['Difficulty'].updateText(currDiff)
+            menuLabels['Skin'].updateText(currSkin)
             for label in menuLabels.values():
                 label.draw(black)
 
@@ -107,10 +109,10 @@ while main:
                         if diffIndex > 0:
                             diffIndex -= 1
                     elif event.key == K_UP:
-                        screen.increaseSkin()
+                        currSkin = screen.increaseSkin()
                         player.updateSkin(screen)
                     elif event.key == K_DOWN:
-                        screen.decreaseSkin()
+                        currSkin = screen.decreaseSkin()
                         player.updateSkin(screen)
                     elif event.key == K_ESCAPE:
                         pygame.quit()

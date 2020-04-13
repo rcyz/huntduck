@@ -32,14 +32,16 @@ class Screen():
             self.skinNum = 0
         else:
             self.skinNum += 1
-        self.loadSkin(self.skinNames, self.skinNum)
+        skinName = self.loadSkin(self.skinNames, self.skinNum)
+        return str(skinName)
 
     def decreaseSkin(self):
         if self.skinNum == 0:
             self.skinNum = len(self.skinNames) - 1
         else:
             self.skinNum -= 1
-        self.loadSkin(self.skinNames, self.skinNum)
+        skinName = self.loadSkin(self.skinNames, self.skinNum)
+        return str(skinName)
 
     def loadSkinNames(self):
         skins = ['default']
@@ -48,6 +50,7 @@ class Screen():
         return skins
 
     def loadSkin(self, skins, skinNum):
+        self.skinName = skins[skinNum]
         dir = 'skins/' + skins[skinNum]
         print(dir)
         playingScreens = ['background', 'pause']
@@ -62,6 +65,7 @@ class Screen():
                 self.images[image] = pygame.transform.scale(pygame.image.load(dir + '/' + image + '.png'), (891, 608))
             except:
                 pass
+        return skins[skinNum]
 
     def getFolder(self):
         return 'skins/' + str(self.skinNames[self.skinNum])
@@ -75,10 +79,14 @@ class Screen():
             'win': pygame.transform.scale(pygame.image.load('skins/default/win.png'), (891, 608)),
             'start': pygame.transform.scale(pygame.image.load('skins/default/start.png'), (230, 60))
         }
+        self.skinName = "default"
 
     def drawStart(self):
         start = self.screen.blit(self.images['start'], (320, 400))
         return start
+
+    def getSkinName(self):
+        return self.skinName
 
 
 class Player(pygame.sprite.Sprite):

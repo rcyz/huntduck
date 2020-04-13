@@ -26,7 +26,8 @@ def load_hiscore():
 def createLabels(screen):
     menuLabels = {
         'Hiscores': Label("Hiscore: ", 10, 528, screen, 42),
-        'Difficulty': Label('Easy', 750, 550, screen, 42)
+        'Difficulty': Label('Easy', 750, 550, screen, 42),
+        'Skin': Label('Default', 30, 10, screen, 42)
     }
     gameLabels = {
         'Lives': Label('Lives: ', 30, 10, screen, 42),
