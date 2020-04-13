@@ -25,6 +25,13 @@ diffSpeeds = {
     'Insane': 25,
     'Fearless': 10
 }
+diffLives = {
+    'Easy': 20,
+    'Medium': 10,
+    'Hard': 5,
+    'Insane': 5,
+    'Fearless': 2
+}
 
 # Sprite lists
 player_sprite = pygame.sprite.Group()
@@ -55,7 +62,7 @@ while main:
         'paused': 0,
         'totalpaused': 0
     }
-    lives = 5
+
     delay = 0
     respawn = 10
 
@@ -65,11 +72,12 @@ while main:
     # game loop
     while game:
         while menu:
+            lives = diffLives[currDiff]
             screen.drawScreen('title')
             startRect = screen.drawStart()
             # calculate high score and draw to screen
-            best_time = calc_hiscores()
-            menuLabels['Hiscores'].updateText('Hiscore: ' + best_time)
+            best_time = load_hiscore()
+            menuLabels['Hiscores'].updateText('Hiscore: ' + str(best_time))
             menuLabels['Difficulty'].updateText(currDiff)
             for label in menuLabels.values():
                 label.draw(black)
@@ -85,8 +93,7 @@ while main:
                 elif event.type == MOUSEBUTTONDOWN and event.button == 1:
 
                     mpos = pygame.mouse.get_pos()
-                    # grab the status of the mouse buttons and check if the left
-                    # mouse button is pressed
+
                     mousestatus = pygame.mouse.get_pressed()
                     if startRect.collidepoint(mpos):
                         menu = False
@@ -162,7 +169,7 @@ while main:
             # checks if the duck has ran out of lives
             if lives <= 0:
                 # records the time when the player died
-                finaltime = str(elapsed)
+                finaltime = elapsed
                 playing = False
                 game_over = True
 
@@ -218,6 +225,7 @@ while main:
             while game_over:
                 # draw the game over screen and final time to the screen
                 if finaltime > best_time:
+                    save = True
                     screen.drawScreen('win')
                 else:
                     screen.drawScreen('gameover')
@@ -231,9 +239,9 @@ while main:
                         sys.exit()
 
                     elif event.type == MOUSEBUTTONDOWN:
-                        # save the score to the hiscore text file
-                        save_hiscores(finaltime)
                         # return to the menu loop
+                        if save:
+                            save_hiscores(finaltime)
                         game_over = False
                         game = False
                         menu = True
